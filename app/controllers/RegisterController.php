@@ -5,7 +5,8 @@
  * Date: 2016-03-04
  * Time: 12:47
  */
-class RegisterController extends ControllerBase{
+class RegisterController extends ControllerBase
+{
     public function initialize(){
         $this->tag->setTitle('Sign Up/Sign In');
         parent::initialize();
@@ -13,6 +14,7 @@ class RegisterController extends ControllerBase{
 
     public function indexAction(){
         $form = new RegisterForm;
+
         if($this->request->isPost()){
             $name = $this->request->getPost('name',array('string','striptags'));
             $username  = $this->request->getPost('username','alphanum');

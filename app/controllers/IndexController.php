@@ -3,12 +3,16 @@
 class IndexController extends ControllerBase
 {
 
-    public function initialize(){
+    public function initialize()
+    {
         $this->tag->setTitle('Welcome');
         parent::initialize();
     }
-	public function indexAction(){
-        echo 'zwz';
+	public function indexAction()
+    {
+        if(!$this->request->isPost()){
+            $this->flash->notice('This si sample application of the Phalcon');
+        }
 	}
 
 }

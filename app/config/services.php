@@ -47,7 +47,7 @@ $di->set('volt', function($view, $di){
 
 $di->set('db', function () use ($config){
 	$config = $config->get('database')->toArray();
-	$dbClass = 'Phalcon\Db\Adapter\Pdo\\'.$config['adapter'];
+	$dbClass = 'Phalcon\Db\Adapter\Pdo\\' . $config['adapter'];
 	unset($config['adapter']);
 	return new $dbClass($config);
 });

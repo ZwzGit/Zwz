@@ -1,57 +1,29 @@
 <?php
+error_reporting(E_ALL);
 
-use Phalcon\Loader;
-use Phalcon\Tag;
-use Phalcon\Mvc\Url;
-use Phalcon\Mvc\View;
 use Phalcon\Mvc\Application;
-use Phalcon\DI\FactoryDefault;
-use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
+use Phalcon\Config\Adapter\Ini as ConfigIni;
 
 try {
 
-    // Register an autoloader
-    $loader = new Loader();
-    $loader->registerDirs(
-        array(
-            '../app/controllers/',
-            '../app/models/'
-        )
-    )->register();
+    defined('RUNTIME', 'dev');
 
-    // Create a DI
-    $di = new FactoryDefault();
+    define('APP_PATH', realpath('..') . '/');
 
-    // Set the database service
-    $di['db'] = function() {
-        return new DbAdapter(array(
-            "host"     => "localhost",
-            "username" => "root",
-            "password" => "root",
-            "dbname"   => "zwz_pro"
-        ));
-    };
+    /*读配置*/
+    $config = new ConfigIni(APP_PATH . 'app/config/config.ini');
 
-    // Setting up the view component
-    $di['view'] = function() {
-        $view = new View();
-        $view->setViewsDir('../app/views/');
-        return $view;
-    };
+    /*如果配置环境有配置，且启用，替换*/
+    if(is_readable(APP_PATH . 'app/config/config.ini.dev')){
+        $overrides = new ConfigIni(APP_PATH . 'app/config/config.ini.dev');
+        $config->merge($overrides);
+    }
 
-    // Setup a base URI so that all generated URIs include the "tutorial" folder
-    $di['url'] = function() {
-        $url = new Url();
-        // $url->setBaseUri('/tutorial/');
-        // $url->setBaseUri('/');
-        $url->setBaseUri(dirname(dirname($_SERVER['PHP_SELF'])).'/');
-        return $url;
-    };
+    /*加载配置loader文件*/
+    require APP_PATH . 'app/config/loader.php';
 
-    // Setup the tag helpers
-    $di['tag'] = function() {
-        return new Tag();
-    };
+    /*加载配置服务services文件*/
+    require APP_PATH . 'app/config/services.php';
 
     // Handle the request
     $application = new Application($di);
@@ -59,5 +31,15 @@ try {
     echo $application->handle()->getContent();
 
 } catch (Exception $e) {
-     echo "Exception: ", $e->getMessage();
+    $log = array(
+        'file' => $e -> getFile(),
+        'line' => $e -> getLine(),
+        'code' => $e -> getCode(),
+        'msg' => $e -> getMessage(),
+        'trace' => $e -> getTraceAsString(),
+    );
+
+    $date = date('YmdHis');
+    $logger = new \Phalcon\Logger\Adapter\File(ROOT_PATH."/app/cache/logs/{$e->getCode()}_{$date}.log");
+    $logger -> error(json_encode($log));
 }

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 0
- * Date: 2016-03-04
- * Time: 12:38
- */
+
 use Phalcon\Mvc\Controller;
 
 class ControllerBase extends Controller{
@@ -20,7 +15,7 @@ class ControllerBase extends Controller{
             array(
                 'controller'    =>  $uriParts[0],
                 'action'    =>  $uriParts[1],
-                'parmas'    =>  $params
+                'params'    =>  $params
             )
         );
     }
